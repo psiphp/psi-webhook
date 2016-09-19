@@ -1,0 +1,16 @@
+{
+    "name": "psiphp/psiwebhook",
+    "description": "PSI Webhook handler",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "dantleech",
+            "email": "dan.t.leech@gmail.com"
+        }
+    ],
+    "require": {
+        "silex/silex": "^2.0",
+        "monolog/monolog": "^1.21",
+        "symfony/yaml": "^3.1"
+    }
+}
