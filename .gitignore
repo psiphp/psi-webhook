@@ -1,3 +1,4 @@
 vendor
 web/*.log
 docs
+/config.yml

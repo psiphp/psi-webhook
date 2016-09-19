@@ -17,7 +17,7 @@ $app->register(new MonologServiceProvider(), array(
 $app['config'] = function ($app) {
     return new \ArrayObject(array_merge([
         'secret' => '1234'
-    ], file_exists('config.yml') ? Yaml::parse(file_get_contents('config.yml')) : []));
+    ], file_exists(__DIR__ . '/../config.yml') ? Yaml::parse(file_get_contents(__DIR__ . '/../config.yml')) : []));
 };
 $app['debug'] = true;
 $app['process_runner'] = function ($app) {
@@ -29,6 +29,7 @@ $app->post('/deploy_docs/{secret}', function(Request $request) use($app) {
         $app['logger']->addError('Bad secret');
         return new Response('', 401);
     }
+    var_dump($app['config']);die();;
 
     if (!$request->request->has('payload')) {
         throw new \InvalidArgumentException(
