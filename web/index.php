@@ -24,12 +24,15 @@ $app['process_runner'] = function ($app) {
     return new ProcessRunner($app['logger']);
 };
 
+$app->get('/', function(Request $request) {
+    return new Response('Hello', 200);
+});
+
 $app->post('/deploy_docs/{secret}', function(Request $request) use($app) { 
-    if ($request->attributes->get('secret') !== $app['config']->offsetGet('secret')) {
+    if ($request->attributes->get('secret') != $app['config']->offsetGet('secret')) {
         $app['logger']->addError('Bad secret');
         return new Response('', 401);
     }
-    var_dump($app['config']);die();;
 
     if (!$request->request->has('payload')) {
         throw new \InvalidArgumentException(
@@ -45,7 +48,7 @@ $app->post('/deploy_docs/{secret}', function(Request $request) use($app) {
         );
     }
 
-    $app['logger']->addInfo(print_r($payload, true));
+    // $app['logger']->addInfo(print_r($payload, true));
 
     $docsDir = __DIR__ . '/../docs';
 
@@ -72,7 +75,7 @@ $app->post('/deploy_docs/{secret}', function(Request $request) use($app) {
     }
 
     $app['process_runner']->run('git pull origin master', $repositoryDir);
-    $app['process_runner']->run('git commit -am "Updated docs"', $docsDir);
+    $app['process_runner']->run(sprintf('git commit -am "[Automated] Updated \"%s\""', $repositoryName), $docsDir);
     $app['process_runner']->run('git push origin master', $docsDir);
 
     return new Response('', 200);
@@ -93,6 +96,7 @@ class ProcessRunner
     {
         $process = new Process($cmd, $cwd);
         $process->run();
+        $this->logger->addInfo(sprintf('Running command: `%s` in `%s`', $cmd, $cwd));
 
         if (!$process->isSuccessful()) {
             throw new \RuntimeException(sprintf('Could not execute `%s`: [%s] `%s` `%s`', $cmd, $process->getExitCode(), $process->getErrorOutput(), $process->getOutput()));
